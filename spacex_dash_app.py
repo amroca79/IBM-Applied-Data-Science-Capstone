@@ -9,7 +9,7 @@ import plotly.express as px
 spacex_df = pd.read_csv(r'C:\Users\Deadend\DS_Projects\IBM-Applied-Data-Science-Capstone\spacex_launch_dash.csv')
 
 success_rate = spacex_df.groupby(['Launch Site'])['class'].value_counts().reset_index(name='count')
-success_rate
+
 max_payload = spacex_df['Payload Mass (kg)'].max()
 min_payload = spacex_df['Payload Mass (kg)'].min()
 
@@ -46,6 +46,7 @@ def get_pie_chart(site_dropdown):
     
     if site_dropdown == 'All':
         fig = px.pie(all_sites, values='count', names='Launch Site')
+        fig.update_traces(textinfo='value')
         return(fig)
     else:
        fig = px.pie(launch_site, values='count', names='class')
