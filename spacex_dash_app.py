@@ -8,21 +8,21 @@ import plotly.express as px
 
 spacex_df = pd.read_csv(r'C:\Users\Deadend\DS_Projects\IBM-Applied-Data-Science-Capstone\spacex_launch_dash.csv')
 
-success_rate = spacex_df.groupby(['Launch Site'])['class'].value_counts().reset_index(name='count')
+success_rate = spacex_df.groupby(['LaunchSite'])['Class'].value_counts().reset_index(name='Count')
 
-max_payload = spacex_df['Payload Mass (kg)'].max()
-min_payload = spacex_df['Payload Mass (kg)'].min()
+max_payload = spacex_df['PayloadMass'].max()
+min_payload = spacex_df['PayloadMass'].min()
 
 mark_values={0:'0kg',1000:'1000kg',2000:'2000kg',3000:'3000kg',4000:'4000kg',5000:'5000kg',6000:'6000kg',7000:'7000kg',8000:'8000kg',9000:'9000kg',10000:'10000kg'}
 
-payload_rate = spacex_df[['Launch Site', 'class', 'Payload Mass (kg)', 'Booster Version Category']].sort_values(by=['Launch Site', 'Payload Mass (kg)', 'Booster Version Category'], ascending=True).reset_index(drop=True)
+payload_rate = spacex_df[['LaunchSite', 'Class', 'PayloadMass', 'Block_Version']].sort_values(by=['LaunchSite', 'PayloadMass', 'Block_Version'], ascending=True).reset_index(drop=True)
 
 app = dash.Dash(__name__)
 
 
 app.layout = html.Div([html.Div(children=[html.H1('SpaceX Launch Records Dashboard',style={'textAlign':'center','color':'blue','font-size':40})]),
                        
-                       html.Div([dcc.Dropdown(id='site_dropdown',options=[{'label':'All Sites','value':'All'},{'label':'CCAFS LC-40','value':'CCAFS LC-40'},{'label':'VAFB SLC-4E','value':'VAFB SLC-4E'},{'label':'KSC LC-39A','value':'KSC LC-39A'},{'label':'CCAFS SLC-40', 'value':'CCAFS SLC-40'}],value='All', placeholder="All" ,searchable=True)]),
+                       html.Div([dcc.Dropdown(id='site_dropdown',options=[{'label':'All Sites','value':'All'},{'label':'CCSFS SLC 40', 'value':'CCSFS SLC 40'},{'label':'KSC LC 39A','value':'KSC LC 39A'},{'label':'VAFB SLC 4E','value':'VAFB SLC 4E'}],value='All', placeholder="All" ,searchable=True)]),
                        html.Br(),
                        
                        html.Div([dcc.Graph(id='success-pie-chart', figure={})]),
@@ -41,15 +41,15 @@ app.layout = html.Div([html.Div(children=[html.H1('SpaceX Launch Records Dashboa
 def get_pie_chart(site_dropdown):
     
     df_copy = success_rate
-    all_sites = df_copy[df_copy['class']==1]
-    launch_site = df_copy[df_copy['Launch Site']==str(site_dropdown)]
+    all_sites = df_copy[df_copy['Class']==1]
+    launch_site = df_copy[df_copy['LaunchSite']==str(site_dropdown)]
     
     if site_dropdown == 'All':
-        fig = px.pie(all_sites, values='count', names='Launch Site')
-        fig.update_traces(textinfo='value')
+        fig = px.pie(all_sites, values='Count', names='LaunchSite')
+        #fig.update_traces(textinfo='value')
         return(fig)
     else:
-       fig = px.pie(launch_site, values='count', names='class')
+       fig = px.pie(launch_site, values='Count', names='Class')
        return(fig)
    
    
@@ -59,14 +59,14 @@ def get_pie_chart(site_dropdown):
 def get_scatter(payload_slider, site_dropdown):
     
     df_copy = payload_rate
-    all_sites = df_copy[df_copy['Payload Mass (kg)'].between(int(payload_slider[0]), int(payload_slider[1]))]
-    launch_site = df_copy[(df_copy['Launch Site'] == str(site_dropdown)) & (df_copy['Payload Mass (kg)'].between(int(payload_slider[0]), int(payload_slider[1])))]
+    all_sites = df_copy[df_copy['PayloadMass'].between(int(payload_slider[0]), int(payload_slider[1]))]
+    launch_site = df_copy[(df_copy['LaunchSite'] == str(site_dropdown)) & (df_copy['PayloadMass'].between(int(payload_slider[0]), int(payload_slider[1])))]
     
     if site_dropdown == 'All':
-        fig = px.scatter(all_sites, x='Payload Mass (kg)', y='class', color='Booster Version Category')
+        fig = px.scatter(all_sites, x='PayloadMass', y='Class', color='Block_Version')
         return(fig)
     else:
-        fig = px.scatter(launch_site, x='Payload Mass (kg)', y='class', color='Booster Version Category')
+        fig = px.scatter(launch_site, x='PayloadMass', y='Class', color='Block_Version')
         return(fig)
     
 
