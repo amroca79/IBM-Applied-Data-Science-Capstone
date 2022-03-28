@@ -43,11 +43,12 @@ def get_pie_chart(site_dropdown):
     
     if site_dropdown == 'All':
         fig = px.pie(all_sites, values='Count', names='LaunchSite')
-        #fig.update_traces(textinfo='value')
+        fig.update_traces(textinfo='value')
         return(fig)
     else:
-       fig = px.pie(launch_site, values='Count', names='Class')
-       return(fig)
+       fig1 = px.pie(launch_site, values='Count', names='Class')
+       fig1.update_traces(textinfo='value')
+       return(fig1)
    
    
 
